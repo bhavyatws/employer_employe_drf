@@ -75,48 +75,7 @@ class ListAssignedTaskTo(generics.ListAPIView):
     authentication_class = [IsAuthenticated]
     
 
-# from rest_framework.views import APIView
-# from rest_framework.response import Response
-# from django.shortcuts import get_object_or_404
 
-# class Comment(APIView):
-   
-#     # authentication_classes = [IsAuthenticated]
-#     # permission_classes = [IsOwnerOrReadOnly]
-
-#     def get(self, request, format=None):
-#         """
-#         Return a list of all users.
-#         """
-#         usernames = [user.username for user in User.objects.all()]
-#         return Response(usernames)
-#     def post(self, request, format=None,id=None):
-#         """
-#         Return a list of all users.
-#         """
-#         task=get_object_or_404(Task,id)
-#         user=self.request.user
-#         serializer=CommentSerializer(data=[request.body,user,task])
-#         if serializer.is_valid():
-#             serializer.save()
-#             return Response({'msg':'Comment Added'})
-#         else:
-#             return Response(serializer.errors)
-
-#         # usernames = [user.username for user in User.objects.all()]
-#         # return Response(usernames)
-# # from django.views.decorators.csrf import csrf_exempt
-
-# @csrf_exempt
-# def comment(request,pk):
-#         task=get_object_or_404(Task,pk)
-#         user=request.user
-#         serializer=CommentSerializer(data=[request.body,user,task])
-#         if serializer.is_valid():
-#             serializer.save()
-#             return Response({'msg':'Comment Added'})
-#         else:
-#             return Response(serializer.errors)
 from .models import Comment as CommentModel
 class GetList(generics.ListAPIView):
 
