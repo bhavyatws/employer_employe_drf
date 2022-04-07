@@ -16,13 +16,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         model=User
         fields=['username','email','first_name','last_name','password','employer']
 
-class TaskSerializer(serializers.ModelSerializer):
-    user = serializers.ReadOnlyField(source='user.username')
-    comment = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
 
-    class Meta:
-        model = Task
-        fields = [ 'id','task', 'task_deadline', 'user','comment']
 
 class CommentSerializer(serializers.ModelSerializer):
     user = serializers.ReadOnlyField(source='user.username')
@@ -31,6 +25,20 @@ class CommentSerializer(serializers.ModelSerializer):
         model = Comment
         fields = ['comment','datetime','task','user' ]
 
+class TaskSerializer(serializers.ModelSerializer):
+    user = serializers.ReadOnlyField(source='user.username')
+    comment = CommentSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Task
+        fields = [ 'id','task', 'task_deadline', 'user','comment']
+    def create(self, validated_data):
+        comment_data = validated_data.pop('comment')
+        task= Task.objects.create(**validated_data)
+        for comment in task:
+            Comment.objects.create(task=task, **comment_data)
+        return task
+
 class AssignedTaskToSerializer(serializers.ModelSerializer):
     
     class Meta:
@@ -38,10 +46,17 @@ class AssignedTaskToSerializer(serializers.ModelSerializer):
         fields = ['assigned_to','task_assigned' ]
 
 class GetAssignedTaskSerializer(serializers.ModelSerializer):
-    task_assigned=serializers.StringRelatedField()
+    task_assigned=TaskSerializer()
     class Meta:
         model = AssignedTask
         fields = ['task_assigned']
+
+    def create(self, validated_data):
+        task_assigned = validated_data.pop('task_assigned')
+        assigned_task= AssignedTask.objects.create(**validated_data)
+        for task in task_assigned:
+            Task.objects.create(task=assigned_task, **task_assigned)
+        return assigned_task
     # def task_assigned(self, obj):
        
     #    task_assigned = Task.objects.all()
