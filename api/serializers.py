@@ -15,6 +15,8 @@ class RegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model=User
         fields=['username','email','first_name','last_name','password','employer']
+        #by writing extra_kwargs ,now password will be only be shown during registration
+        extra_kwargs={'password':{'write_only':True,'min_length':5}}
 
 
 
